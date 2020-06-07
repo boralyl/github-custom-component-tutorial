@@ -1,0 +1,9 @@
+{
+  "codeowners": ["@boralyl"],
+  "config_flow": false,
+  "dependencies": [],
+  "documentation": "https://github.com/boralyl/github-custom-component-tutorial",
+  "domain": "github_custom",
+  "name": "Github Custom",
+  "requirements": []
+}
