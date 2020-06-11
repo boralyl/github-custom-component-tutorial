@@ -5,5 +5,5 @@
   "documentation": "https://github.com/boralyl/github-custom-component-tutorial",
   "domain": "github_custom",
   "name": "Github Custom",
-  "requirements": []
+  "requirements": ["gidgethub[aiohttp]==4.1.1"]
 }
