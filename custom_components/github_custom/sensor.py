@@ -5,8 +5,10 @@ from datetime import timedelta
 from typing import Any, Callable, Dict, Optional
 from urllib import parse
 
-from gidgethub.aiohttp import GitHubAPI
+import gidgethub
 import voluptuous as vol
+from aiohttp import ClientError
+from gidgethub.aiohttp import GitHubAPI
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
@@ -172,8 +174,10 @@ class GitHubRepoSensor(Entity):
 
             # Set state to short commit sha.
             self._state = latest_commit["sha"][:7]
-        except Exception:
-            _LOGGER.exception("Error updating GitHub data.")
+            self.available = True
+        except (ClientError, gidgethub.GitHubException):
+            self.available = False
+            _LOGGER.exception("Error retrieving data from GitHub.")
 
     async def _get_total(self, url: str) -> int:
         """Get the total number of results for a GitHub resource URL.
