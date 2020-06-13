@@ -91,20 +91,26 @@ async def async_setup_platform(
     """Set up the sensor platform."""
     session = async_get_clientsession(hass)
     github = GitHubAPI(session, "requester", oauth_token=config[CONF_ACCESS_TOKEN])
-    sensors = [GitHubRepoSensor(github, repo["path"]) for repo in config[CONF_REPOS]]
+    sensors = [GitHubRepoSensor(github, repo) for repo in config[CONF_REPOS]]
     async_add_entities(sensors, update_before_add=True)
 
 
 class GitHubRepoSensor(Entity):
     """Representation of a GitHub Repo sensor."""
 
-    def __init__(self, github: GitHubAPI, repo: str):
+    def __init__(self, github: GitHubAPI, repo: Dict[str, str]):
         super().__init__()
         self.github = github
-        self.repo = repo
-        self.attrs: Dict[str, Any] = {ATTR_PATH: repo}
+        self.repo = repo["path"]
+        self.attrs: Dict[str, Any] = {ATTR_PATH: self.repo}
+        self._name = repo.get("name", self.repo)
         self._state = None
         self._available = True
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        return self._name
 
     @property
     def unique_id(self) -> str:
