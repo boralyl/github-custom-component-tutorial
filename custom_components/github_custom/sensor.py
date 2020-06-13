@@ -1,7 +1,9 @@
 """GitHub sensor platform."""
 import logging
+import re
 from datetime import timedelta
 from typing import Any, Callable, Dict, Optional
+from urllib import parse
 
 from gidgethub.aiohttp import GitHubAPI
 import voluptuous as vol
@@ -39,6 +41,7 @@ from .const import (
     ATTR_STARGAZERS,
     ATTR_VIEWS,
     ATTR_VIEWS_UNIQUE,
+    BASE_API_URL,
 )
 
 
@@ -58,6 +61,23 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_URL): cv.url,
     }
 )
+
+LINK_RE = re.compile(
+    r"\<(?P<uri>[^>]+)\>;\s*" r'(?P<param_type>\w+)="(?P<param_value>\w+)"(,\s*)?'
+)
+
+
+def get_last_page_url(link: Optional[str]) -> Optional[str]:
+    # https://developer.github.com/v3/#pagination
+    # https://tools.ietf.org/html/rfc5988
+    if link is None:
+        return None
+    for match in LINK_RE.finditer(link):
+        if match.group("param_type") == "rel":
+            if match.group("param_value") == "last":
+                return match.group("uri")
+    else:
+        return None
 
 
 async def async_setup_platform(
@@ -121,27 +141,26 @@ class GitHubRepoSensor(Entity):
             self.attrs[ATTR_LATEST_COMMIT_MESSAGE] = latest_commit["commit"]["message"]
             self.attrs[ATTR_LATEST_COMMIT_SHA] = latest_commit["sha"]
 
-            issues_url = f"/repos/{self.repo}/issues"
-            issues_data = await self.github.getitem(
-                issues_url, {"state": "open", "sort": "created"}
-            )
-            # Note: This is only the first page, there isn't a property to get the total
-            # number of issues.  You can request all pages using `self.github.getiter()`
-            # but that requires multiple network requests.
-            self.attrs[ATTR_OPEN_ISSUES] = len(issues_data)
-            if issues_data:
-                self.attrs[ATTR_LATEST_OPEN_ISSUE_URL] = issues_data[0]["html_url"]
-
             prs_url = f"/repos/{self.repo}/pulls"
             prs_data = await self.github.getitem(
-                prs_url, {"state": "open", "sort": "created"}
+                prs_url, {"state": "open", "sort": "created", "per_page": 1}
             )
-            # Note: This is only the first page, there isn't a property to get the total
-            # number of issues.  You can request all pages using `self.github.getiter()`
-            # but that requires multiple network requests.
-            self.attrs[ATTR_OPEN_PULL_REQUESTS] = len(prs_data)
+            self.attrs[ATTR_OPEN_PULL_REQUESTS] = await self._get_total(prs_url)
             if prs_data:
                 self.attrs[ATTR_LATEST_OPEN_PULL_REQUEST_URL] = prs_data[0]["html_url"]
+
+            issues_url = f"/repos/{self.repo}/issues"
+            issues_data = await self.github.getitem(
+                issues_url, {"state": "open", "sort": "created", "per_page": 1}
+            )
+            # GitHub issues include pull requests, so to just get the number of issues,
+            # we need to subtract the total number of pull requests from this total.
+            total_issues = await self._get_total(issues_url)
+            self.attrs[ATTR_OPEN_ISSUES] = (
+                total_issues - self.attrs[ATTR_OPEN_PULL_REQUESTS]
+            )
+            if issues_data:
+                self.attrs[ATTR_LATEST_OPEN_ISSUE_URL] = issues_data[0]["html_url"]
 
             releases_url = f"/repos/{self.repo}/releases"
             releases_data = await self.github.getitem(releases_url)
@@ -155,3 +174,23 @@ class GitHubRepoSensor(Entity):
             self._state = latest_commit["sha"][:7]
         except Exception:
             _LOGGER.exception("Error updating GitHub data.")
+
+    async def _get_total(self, url: str) -> int:
+        """Get the total number of results for a GitHub resource URL.
+
+        GitHub's API doesn't provide a total count for paginated resources.  To get
+        around that and to not have to request every page, we do a single request
+        requesting 1 item per page.  Then we get the url for the last page in the
+        response headers and parse the page number from there.  This page number is
+        the total number of results.
+        """
+        api_url = f"{BASE_API_URL}{url}"
+        params = {"per_page": 1, "state": "open"}
+        headers = {"Authorization": self.github.oauth_token}
+        async with self.github._session.get(
+            api_url, params=params, headers=headers
+        ) as resp:
+            last_page_url = get_last_page_url(resp.headers.get("Link"))
+            if last_page_url is not None:
+                return int(dict(parse.parse_qsl(last_page_url))["page"])
+        return 0
