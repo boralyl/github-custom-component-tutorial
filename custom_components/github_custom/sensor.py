@@ -104,11 +104,17 @@ class GitHubRepoSensor(Entity):
         self.repo = repo
         self.attrs: Dict[str, Any] = {ATTR_PATH: repo}
         self._state = None
+        self._available = True
 
     @property
     def unique_id(self) -> str:
         """Return the unique ID of the sensor."""
         return self.repo
+
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self._available
 
     @property
     def state(self) -> Optional[str]:
@@ -174,9 +180,9 @@ class GitHubRepoSensor(Entity):
 
             # Set state to short commit sha.
             self._state = latest_commit["sha"][:7]
-            self.available = True
+            self._available = True
         except (ClientError, gidgethub.GitHubException):
-            self.available = False
+            self._available = False
             _LOGGER.exception("Error retrieving data from GitHub.")
 
     async def _get_total(self, url: str) -> int:
