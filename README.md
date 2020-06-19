@@ -1,5 +1,8 @@
 # Github Custom for Home Assistant
 
+[![](https://img.shields.io/github/license/boralyl/github-custom-component-tutorial?style=for-the-badge)](LICENSE)
+[![](https://img.shields.io/github/workflow/status/boralyl/github-custom-component-tutorial/Python%20package?style=for-the-badge)](https://github.com/boralyl/github-custom-component-tutorial/actions)
+
 ## About
 
 This repo contains a custom component for [Home Assistant](https://www.home-assistant.io) that was created in a tutorial series
