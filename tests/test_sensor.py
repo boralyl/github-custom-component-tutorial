@@ -5,7 +5,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pytest_homeassistant.async_mock import AsyncMock, MagicMock, Mock
 
 from custom_components.github_custom.const import BASE_API_URL
-from custom_components.github_custom.sensor import get_last_page_url, GitHubRepoSensor
+from custom_components.github_custom.sensor import GitHubRepoSensor, get_last_page_url
 
 
 def test_get_last_page_url_link_none():

@@ -15,7 +15,7 @@ An integration that monitors [GitHub](https://github.com/) repositories specifie
 
 ## Running Tests
 
-To run the test suite create a virtualenv (I reccomend checking out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) for this) and install the test requirements.
+To run the test suite create a virtualenv (I recommend checking out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) for this) and install the test requirements.
 
 ```bash
 $ pip install -r requirements.test.txt
