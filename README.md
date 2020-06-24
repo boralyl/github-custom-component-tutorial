@@ -11,6 +11,7 @@ on [aarongodfrey.dev](https://aarongodfrey.dev/home%20automation/building_a_home
 The tutorial walks through the steps to create a custom component for use in Home Assistant.
 
 [Part 1: Project Structure and Basics](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_1/)
+[Part 2: Unit Testing and Continuous Integration](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_2/)
 
 ## What It Is
 
