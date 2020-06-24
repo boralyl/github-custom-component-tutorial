@@ -1,3 +1,6 @@
+# Strictly for tests
 pytest
 pytest-cov==2.9.0
 pytest-homeassistant
+# From our manifest.json for our custom component
+gidgethub[aiohttp]==4.1.1
