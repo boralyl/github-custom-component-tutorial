@@ -2,7 +2,7 @@
 from gidgethub import GitHubException
 from gidgethub.aiohttp import GitHubAPI
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from pytest_homeassistant.async_mock import AsyncMock, MagicMock, Mock
+from pytest_homeassistant_custom_component.async_mock import AsyncMock, MagicMock, Mock
 
 from custom_components.github_custom.const import BASE_API_URL
 from custom_components.github_custom.sensor import GitHubRepoSensor, get_last_page_url
