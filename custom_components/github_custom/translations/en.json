@@ -1,0 +1,11 @@
+{
+  "config": {
+    "error": {
+    },
+    "step": {
+      "user": {
+        "title": "Setup"
+      }
+    }
+  }
+}
