@@ -1,30 +1,8 @@
 """Tests for the sensor module."""
 from gidgethub import GitHubException
-from gidgethub.aiohttp import GitHubAPI
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from pytest_homeassistant_custom_component.async_mock import AsyncMock, MagicMock, Mock
+from pytest_homeassistant_custom_component.async_mock import AsyncMock, MagicMock
 
-from custom_components.github_custom.const import BASE_API_URL
-from custom_components.github_custom.sensor import GitHubRepoSensor, get_last_page_url
-
-
-def test_get_last_page_url_link_none():
-    """Test that when the link is None, we return None."""
-    link = None
-    assert get_last_page_url(link) is None
-
-
-def test_get_last_page_url_no_last_rel():
-    """Test that we return None if there is no last rel link."""
-    link = 'Link: <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=2>; rel="next"'
-    assert get_last_page_url(link) is None
-
-
-def test_get_last_page_url_link_has_last_ref():
-    """Test we return the last url if there is a last rel link."""
-    link = 'Link: <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=2>; rel="next", <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=1051>; rel="last"'
-    expected = "https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=1051"
-    assert expected == get_last_page_url(link)
+from custom_components.github_custom.sensor import GitHubRepoSensor
 
 
 async def test_async_update_success(hass, aioclient_mock):
@@ -38,6 +16,7 @@ async def test_async_update_success(hass, aioclient_mock):
                 "name": "Home Assistant",
                 "permissions": {"admin": False, "push": True, "pull": False},
                 "stargazers_count": 9000,
+                "open_issues_count": 5000,
             },
             # clones response
             {"count": 100, "uniques": 50},
@@ -51,17 +30,18 @@ async def test_async_update_success(hass, aioclient_mock):
                 }
             ],
             # pulls response
-            [{"html_url": "https://github.com/homeassistant/core/pull/1347"}],
+            {
+                "incomplete_results": False,
+                "total_count": 345,
+                "items": [
+                    {"html_url": "https://github.com/homeassistant/core/pull/1347"}
+                ],
+            },
             # issues response
             [{"html_url": "https://github.com/homeassistant/core/issues/1"}],
             # releases response
             [{"html_url": "https://github.com/homeassistant/core/releases/v0.1.112"}],
         ]
-    )
-    link = 'Link: <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=2>; rel="next", <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=100>; rel="last"'
-    # This odd mock is to mock the async with in the `_get_total` method.
-    github._session.get.return_value.__aenter__ = AsyncMock(
-        return_value=Mock(headers={"Link": link})
     )
     sensor = GitHubRepoSensor(github, {"path": "homeassistant/core"})
     await sensor.async_update()
@@ -77,8 +57,8 @@ async def test_async_update_success(hass, aioclient_mock):
         "latest_release_tag": "v0.1.112",
         "latest_release_url": "https://github.com/homeassistant/core/releases/v0.1.112",
         "name": "Home Assistant",
-        "open_issues": 0,
-        "open_pull_requests": 100,
+        "open_issues": 4655,
+        "open_pull_requests": 345,
         "path": "homeassistant/core",
         "stargazers": 9000,
         "views": 10000,
@@ -99,26 +79,3 @@ async def test_async_update_failed():
 
     assert sensor.available is False
     assert {"path": "homeassistant/core"} == sensor.attrs
-
-
-async def test__get_total_no_link_header(hass, aioclient_mock):
-    """Test we return 0 when there is no Link header."""
-    aioclient_mock.get(f"{BASE_API_URL}/repos/homeassistant/core")
-    session = async_get_clientsession(hass)
-    gh = GitHubAPI(session, "requester", oauth_token="oauth_token")
-    sensor = GitHubRepoSensor(gh, {"path": "homeassistant/core"})
-    actual = await sensor._get_total("/repos/homeassistant/core")
-    assert 0 == actual
-
-
-async def test__get_total_with_link_header(hass, aioclient_mock):
-    """Test we return the total when there is a Link header with a last ref."""
-    link = 'Link: <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=2>; rel="next", <https://api.github.com/repositories/12888993/issues?per_page=1&state=open&page=1051>; rel="last"'
-    aioclient_mock.get(
-        f"{BASE_API_URL}/repos/homeassistant/core", headers={"Link": link}
-    )
-    session = async_get_clientsession(hass)
-    gh = GitHubAPI(session, "requester", oauth_token="oauth_token")
-    sensor = GitHubRepoSensor(gh, {"path": "homeassistant/core"})
-    actual = await sensor._get_total("/repos/homeassistant/core")
-    assert 1051 == actual
