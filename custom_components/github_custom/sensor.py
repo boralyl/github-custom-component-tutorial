@@ -144,7 +144,7 @@ class GitHubRepoSensor(Entity):
             prs_url = f"/search/issues?q=repo:{self.repo}+state:open+is:pr"
             prs_data = await self.github.getitem(prs_url)
             self.attrs[ATTR_OPEN_PULL_REQUESTS] = prs_data["total_count"]
-            if prs_data:
+            if prs_data and prs_data["items"]:
                 self.attrs[ATTR_LATEST_OPEN_PULL_REQUEST_URL] = prs_data["items"][0][
                     "html_url"
                 ]
