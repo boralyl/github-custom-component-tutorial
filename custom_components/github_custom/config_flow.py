@@ -9,7 +9,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
-from .const import DOMAIN
+from .const import CONF_REPOS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not errors:
                 # Input is valid, set data.
                 self.data = user_input
-                self.data["repos"] = []
+                self.data[CONF_REPOS] = []
                 # Return the form of the next step.
                 return await self.async_step_repo()
 
@@ -66,22 +66,27 @@ class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Second step in config flow to add a repo to watch."""
         errors: Dict[str, str] = {}
         if user_input is not None:
+            # Validate the path.
             try:
                 validate_path(user_input[CONF_PATH])
             except ValueError:
                 errors["base"] = "invalid_path"
 
             if not errors:
-                self.data["repos"].append(
+                # Input is valid, set data.
+                self.data[CONF_REPOS].append(
                     {
                         "path": user_input[CONF_PATH],
                         "name": user_input.get(CONF_NAME, user_input[CONF_PATH]),
                     }
                 )
+                # If user ticked the box show this form again so they can add an
+                # additional repo.
                 if user_input.get("add_another", False):
                     return await self.async_step_repo()
 
-                _LOGGER.warning("user_input: %s - %s", user_input, self.data)
+                # User is done adding repos, create the config entry.
+                return self.async_create_entry(title="GitHub Custom", data=self.data)
 
         return self.async_show_form(
             step_id="repo", data_schema=REPO_SCHEMA, errors=errors

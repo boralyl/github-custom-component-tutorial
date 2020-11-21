@@ -3,11 +3,11 @@ from datetime import timedelta
 import logging
 import re
 from typing import Any, Callable, Dict, Optional
-from urllib import parse
 
 from aiohttp import ClientError
 import gidgethub
 from gidgethub.aiohttp import GitHubAPI
+from homeassistant import config_entries, core
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
     ATTR_NAME,
@@ -42,14 +42,14 @@ from .const import (
     ATTR_STARGAZERS,
     ATTR_VIEWS,
     ATTR_VIEWS_UNIQUE,
-    BASE_API_URL,
+    CONF_REPOS,
+    DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(minutes=10)
 
-CONF_REPOS = "repositories"
 REPO_SCHEMA = vol.Schema(
     {vol.Required(CONF_PATH): cv.string, vol.Optional(CONF_NAME): cv.string}
 )
@@ -62,9 +62,18 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-LINK_RE = re.compile(
-    r"\<(?P<uri>[^>]+)\>;\s*" r'(?P<param_type>\w+)="(?P<param_value>\w+)"(,\s*)?'
-)
+
+async def async_setup_entry(
+    hass: core.HomeAssistant,
+    config_entry: config_entries.ConfigEntry,
+    async_add_entities,
+):
+    """Setup sensors from a config entry created in the integrations UI."""
+    config = hass.data[DOMAIN][config_entry.entry_id]
+    session = async_get_clientsession(hass)
+    github = GitHubAPI(session, "requester", oauth_token=config[CONF_ACCESS_TOKEN])
+    sensors = [GitHubRepoSensor(github, repo) for repo in config[CONF_REPOS]]
+    async_add_entities(sensors, update_before_add=True)
 
 
 async def async_setup_platform(

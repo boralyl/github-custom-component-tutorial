@@ -17,3 +17,5 @@ ATTR_VIEWS = "views"
 ATTR_VIEWS_UNIQUE = "views_unique"
 
 BASE_API_URL = "https://api.github.com"
+
+CONF_REPOS = "repositories"
