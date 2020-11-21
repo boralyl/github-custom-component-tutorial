@@ -1,10 +1,26 @@
 {
   "config": {
     "error": {
+      "auth": "The auth token provided is not valid.",
+      "invalid_path": "The path provided is not valid. Should be in the format `user/repo-name`."
     },
     "step": {
       "user": {
-        "title": "Setup"
+        "data": {
+          "access_token": "GitHub Access Token",
+          "url": "GitHub Enterprise server URL"
+        },
+        "description": "Enter your GitHub credentials.",
+        "title": "Authentication"
+      },
+      "repo": {
+        "data": {
+          "add_another": "Add another repo?",
+          "path": "Path to the repository e.g. boralyl/github-custom",
+          "name": "Name of the sensor."
+        },
+        "description": "Add a GitHub repo, check the box to add another.",
+        "title": "Add GitHub Repository"
       }
     }
   }

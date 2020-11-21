@@ -1,6 +1,6 @@
 {
   "codeowners": ["@boralyl"],
-  "config_flow": false,
+  "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/boralyl/github-custom-component-tutorial",
   "domain": "github_custom",
