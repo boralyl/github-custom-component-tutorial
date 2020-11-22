@@ -10,8 +10,9 @@ on [aarongodfrey.dev](https://aarongodfrey.dev/home%20automation/building_a_home
 
 The tutorial walks through the steps to create a custom component for use in Home Assistant.
 
-* [Part 1: Project Structure and Basics](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_1/)
-* [Part 2: Unit Testing and Continuous Integration](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_2/)
+- [Part 1: Project Structure and Basics](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_1/)
+- [Part 2: Unit Testing and Continuous Integration](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_2/)
+- [Part 3: Adding a Config Flow]()
 
 ## What It Is
 
@@ -30,23 +31,26 @@ the test suite.
 
 ```bash
 $ pytest
-Test session starts (platform: linux, Python 3.7.5, pytest 5.4.3, pytest-sugar 0.9.3)
-rootdir: /home/dev/projects/github-custom, inifile: setup.cfg, testpaths: tests
-plugins: cov-2.9.0, aiohttp-0.3.0, requests-mock-1.8.0, homeassistant-0.1.1, timeout-1.3.4, sugar-0.9.3
+Test session starts (platform: linux, Python 3.7.5, pytest 5.4.3, pytest-sugar 0.9.4)
+rootdir: /home/aaron/projects/github-custom, inifile: setup.cfg, testpaths: tests
+plugins: forked-1.3.0, timeout-1.4.2, cov-2.10.1, aiohttp-0.3.0, requests-mock-1.8.0, xdist-2.1.0, sugar-0.9.4, test-groups-1.0.3, homeassistant-custom-component-0.0.20
 collecting ...
- tests/test_sensor.py ✓✓✓✓✓✓✓                                                                                                                                                  100% ██████████
+ tests/test_config_flow.py ✓✓✓✓✓✓✓✓✓✓✓                                                                                                                                          85% ████████▌
+ tests/test_sensor.py ✓✓                                                                                                                                                       100% ██████████
 
 ----------- coverage: platform linux, python 3.7.5-final-0 -----------
-Name                                          Stmts   Miss  Cover   Missing
----------------------------------------------------------------------------
-custom_components/__init__.py                     0      0   100%
-custom_components/github_custom/__init__.py       0      0   100%
-custom_components/github_custom/const.py         17      0   100%
-custom_components/github_custom/sensor.py       110      7    94%   92-95, 113, 118, 127
----------------------------------------------------------------------------
-TOTAL                                           127      7    94%
+Name                                             Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------
+custom_components/__init__.py                        0      0   100%
+custom_components/github_custom/__init__.py         12      0   100%
+custom_components/github_custom/config_flow.py      23      0   100%
+custom_components/github_custom/const.py            18      0   100%
+custom_components/github_custom/sensor.py           97      5    95%   86-89, 121
+------------------------------------------------------------------------------
+TOTAL                                              150      5    97%
 
+Required test coverage of 93.0% reached. Total coverage: 96.67%
 
-Results (0.14s):
-       7 passed
+Results (0.73s):
+      13 passed
 ```

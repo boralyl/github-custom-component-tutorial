@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 from gidgethub import BadRequest
 from gidgethub.aiohttp import GitHubAPI
-from homeassistant import config_entries
+from homeassistant import config_entries, core
 from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH, CONF_URL
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -34,22 +34,31 @@ def validate_path(path: str) -> None:
         raise ValueError
 
 
+async def validate_auth(access_token: str, hass: core.HomeAssistant) -> None:
+    """Validates a GitHub access token.
+
+    Raises a ValueError if the auth token is invalid.
+    """
+    session = async_get_clientsession(hass)
+    gh = GitHubAPI(session, "requester", oauth_token=access_token)
+    try:
+        await gh.getitem("repos/home-assistant/core")
+    except BadRequest:
+        raise ValueError
+
+
 class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Github Custom config flow."""
+
+    data: Optional[Dict[str, Any]]
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
         if user_input is not None:
-            # Validate that the auth token is valid.
-            session = async_get_clientsession(self.hass)
-            gh = GitHubAPI(
-                session, "requester", oauth_token=user_input[CONF_ACCESS_TOKEN]
-            )
             try:
-                await gh.getitem("repos/home-assistant/core")
-            except BadRequest:
-                # Invalid set `auth` error.
+                await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
+            except ValueError:
                 errors["base"] = "auth"
             if not errors:
                 # Input is valid, set data.
