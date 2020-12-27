@@ -10,16 +10,20 @@ from custom_components.github_custom import config_flow
 from custom_components.github_custom.const import CONF_REPOS
 
 
-def test_validate_path_valid():
+@patch("custom_components.github_custom.config_flow.GitHubAPI")
+async def test_validate_path_valid(m_github, hass):
     """Test no exception is raised for a valid path."""
-    config_flow.validate_path("home-assistant/core")
+    m_instance = AsyncMock()
+    m_instance.getitem = AsyncMock()
+    m_github.return_value = m_instance
+    await config_flow.validate_path("home-assistant/core", "access-token", hass)
 
 
-def test_validate_path_invalid():
+async def test_validate_path_invalid(hass):
     """Test a ValueError is raised when the path is not valid."""
     for bad_path in ("home-assistant", "home-assistant/core/foo"):
         with pytest.raises(ValueError):
-            config_flow.validate_path(bad_path)
+            await config_flow.validate_path(bad_path, "access-token", hass)
 
 
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
@@ -103,6 +107,9 @@ async def test_flow_repo_init_form(hass):
 
 async def test_flow_repo_path_invalid(hass):
     """Test errors populated when path is invalid."""
+    config_flow.GithubCustomConfigFlow.data = {
+        CONF_ACCESS_TOKEN: "token",
+    }
     _result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "repo"}
     )
@@ -125,13 +132,16 @@ async def test_flow_repo_add_another(hass):
         _result["flow_id"],
         user_input={CONF_PATH: "home-assistant/core", "add_another": True},
     )
-    print(result)
     assert "repo" == result["step_id"]
     assert "form" == result["type"]
 
 
-async def test_flow_repo_creates_config_entry(hass):
+@patch("custom_components.github_custom.config_flow.GitHubAPI")
+async def test_flow_repo_creates_config_entry(m_github, hass):
     """Test the config entry is successfully created."""
+    m_instance = AsyncMock()
+    m_instance.getitem = AsyncMock()
+    m_github.return_value = m_instance
     config_flow.GithubCustomConfigFlow.data = {
         CONF_ACCESS_TOKEN: "token",
         CONF_REPOS: [],
