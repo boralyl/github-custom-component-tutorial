@@ -16,11 +16,27 @@
       "repo": {
         "data": {
           "add_another": "Add another repo?",
-          "path": "Path to the repository e.g. boralyl/github-custom",
+          "path": "Path to the repository e.g. home-assistant/core",
           "name": "Name of the sensor."
         },
         "description": "Add a GitHub repo, check the box to add another.",
         "title": "Add GitHub Repository"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "invalid_path": "The path provided is not valid. Should be in the format `user/repo-name` and should be a valid github repository."
+    },
+    "step": {
+      "init": {
+        "title": "Manage Repos",
+        "data": {
+          "repos": "Existing Repos: Uncheck any repos you want to remove.",
+          "path": "New Repo: Path to the repository e.g. home-assistant-core",
+          "name": "New Repo: Name of the sensor."
+        },
+        "description": "Remove existing repos or add a new repo."
       }
     }
   }

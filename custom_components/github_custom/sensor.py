@@ -70,6 +70,9 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
+    # Update our config to include new repos and remove those that have been removed.
+    if config_entry.options:
+        config.update(config_entry.options)
     session = async_get_clientsession(hass)
     github = GitHubAPI(session, "requester", oauth_token=config[CONF_ACCESS_TOKEN])
     sensors = [GitHubRepoSensor(github, repo) for repo in config[CONF_REPOS]]
@@ -182,4 +185,6 @@ class GitHubRepoSensor(Entity):
             self._available = True
         except (ClientError, gidgethub.GitHubException):
             self._available = False
-            _LOGGER.exception("Error retrieving data from GitHub.")
+            _LOGGER.exception(
+                "Error retrieving data from GitHub for sensor %s.", self.name
+            )
