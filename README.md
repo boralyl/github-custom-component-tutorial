@@ -13,6 +13,8 @@ The tutorial walks through the steps to create a custom component for use in Hom
 - [Part 1: Project Structure and Basics](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_1/)
 - [Part 2: Unit Testing and Continuous Integration](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_2/)
 - [Part 3: Adding a Config Flow](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_3/)
+- Part 4: Adding an Options Flow (Coming Soon)
+- Part 5: Testing and Verifying Changes Locally (Coming Soon)
 
 ## What It Is
 
