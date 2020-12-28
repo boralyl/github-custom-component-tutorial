@@ -18,7 +18,8 @@ The tutorial walks through the steps to create a custom component for use in Hom
 
 ## What It Is
 
-An integration that monitors [GitHub](https://github.com/) repositories specified in a `configuration.yaml` file.
+An integration that monitors [GitHub](https://github.com/) repositories specified in a `configuration.yaml` file
+or optionally via the Integrations UI.
 
 ## Running Tests
 
