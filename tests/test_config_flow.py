@@ -1,10 +1,10 @@
 """Tests for the config flow."""
 from unittest import mock
+from unittest.mock import AsyncMock, patch
 
 from gidgethub import BadRequest
 from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH
 import pytest
-from pytest_homeassistant_custom_component.async_mock import AsyncMock, patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.github_custom import config_flow
@@ -57,6 +57,7 @@ async def test_flow_user_init(hass):
         "errors": {},
         "flow_id": mock.ANY,
         "handler": "github_custom",
+        "last_step": None,
         "step_id": "user",
         "type": "form",
     }
@@ -101,6 +102,7 @@ async def test_flow_repo_init_form(hass):
         "flow_id": mock.ANY,
         "handler": "github_custom",
         "step_id": "repo",
+        "last_step": None,
         "type": "form",
     }
     assert expected == result
@@ -120,8 +122,13 @@ async def test_flow_repo_path_invalid(hass):
     assert {"base": "invalid_path"} == result["errors"]
 
 
-async def test_flow_repo_add_another(hass):
+@patch("custom_components.github_custom.config_flow.GitHubAPI")
+async def test_flow_repo_add_another(github, hass):
     """Test we show the repo flow again if the add_another box was checked."""
+    instance = AsyncMock()
+    instance.getitem = AsyncMock()
+    github.return_value = instance
+
     config_flow.GithubCustomConfigFlow.data = {
         CONF_ACCESS_TOKEN: "token",
         CONF_REPOS: [],
@@ -168,6 +175,7 @@ async def test_flow_repo_creates_config_entry(m_github, hass):
         },
         "description": None,
         "description_placeholders": None,
+        "options": {},
         "result": mock.ANY,
     }
     assert expected == result
