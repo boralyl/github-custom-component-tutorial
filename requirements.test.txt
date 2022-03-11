@@ -1,4 +1,6 @@
 # Strictly for tests
+codecov==2.1.12
+coverage==6.2.0
 pytest
 pytest-cov<3.0.0
 pytest-homeassistant-custom-component>=0.4.8
