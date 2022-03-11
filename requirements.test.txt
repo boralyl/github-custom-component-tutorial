@@ -3,4 +3,5 @@ pytest
 pytest-cov<3.0.0
 pytest-homeassistant-custom-component>=0.4.8
 # From our manifest.json for our custom component
-gidgethub[aiohttp]==4.1.1
+gidgethub[aiohttp]==5.1.0
+cryptography==35.0.0
