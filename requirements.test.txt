@@ -1,6 +1,7 @@
 # From our manifest.json for our custom component
 gidgethub[aiohttp]==5.1.0
-pyjwt[crypto]==2.1.0
+PyJWT[crypto]==2.1.0
+crytography==35.0.0
 
 # Strictly for tests
 codecov==2.1.12
