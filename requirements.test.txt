@@ -1,5 +1,5 @@
 # From our manifest.json for our custom component
-gidgethub[aiohttp]==5.1.0
+gidgethub[aiohttp]==4.2.0
 PyJWT[crypto]==2.1.0
 cryptography==35.0.0
 
