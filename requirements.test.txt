@@ -3,7 +3,7 @@ gidgethub[aiohttp]==4.2.0
 
 # Strictly for tests
 codecov==2.1.12
-coverage==6.3.1
-pytest==7.0.1
+coverage==6.2.0
+pytest==6.2.5
 pytest-cov==2.12.1
 pytest-homeassistant-custom-component==0.6.15
