@@ -1,10 +1,9 @@
 # From our manifest.json for our custom component
 gidgethub[aiohttp]==4.1.1
-pyjwt[crypto]==2.1.0
 
 # Strictly for tests
 codecov==2.1.12
-coverage==6.2.0
-pytest==6.2.5
+coverage==6.3.2
+pytest==7.1.1
 pytest-cov==2.12.1
-pytest-homeassistant-custom-component==0.6.15
+pytest-homeassistant-custom-component==0.8.6
