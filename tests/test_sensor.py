@@ -66,7 +66,7 @@ async def test_async_update_success(hass, aioclient_mock):
         "views_unique": 5000,
     }
     assert expected == sensor.attrs
-    assert expected == sensor.device_state_attributes
+    assert expected == sensor.extra_state_attributes
     assert sensor.available is True
 
 
