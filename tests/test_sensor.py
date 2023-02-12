@@ -2,10 +2,12 @@
 from unittest.mock import AsyncMock, MagicMock
 
 from gidgethub import GitHubException
+import pytest
 
 from custom_components.github_custom.sensor import GitHubRepoSensor
 
 
+@pytest.mark.asyncio
 async def test_async_update_success(hass, aioclient_mock):
     """Tests a fully successful async_update."""
     github = MagicMock()
@@ -70,6 +72,7 @@ async def test_async_update_success(hass, aioclient_mock):
     assert sensor.available is True
 
 
+@pytest.mark.asyncio
 async def test_async_update_failed():
     """Tests a failed async_update."""
     github = MagicMock()

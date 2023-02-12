@@ -11,6 +11,7 @@ from custom_components.github_custom import config_flow
 from custom_components.github_custom.const import CONF_REPOS, DOMAIN
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
 async def test_validate_path_valid(m_github, hass):
     """Test no exception is raised for a valid path."""
@@ -20,6 +21,7 @@ async def test_validate_path_valid(m_github, hass):
     await config_flow.validate_path("home-assistant/core", "access-token", hass)
 
 
+@pytest.mark.asyncio
 async def test_validate_path_invalid(hass):
     """Test a ValueError is raised when the path is not valid."""
     for bad_path in ("home-assistant", "home-assistant/core/foo"):
@@ -27,6 +29,7 @@ async def test_validate_path_invalid(hass):
             await config_flow.validate_path(bad_path, "access-token", hass)
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
 async def test_validate_auth_valid(m_github, hass):
     """Test no exception is raised for valid auth."""
@@ -36,6 +39,7 @@ async def test_validate_auth_valid(m_github, hass):
     await config_flow.validate_auth("token", hass)
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
 async def test_validate_auth_invalid(m_github, hass):
     """Test ValueError is raised when auth is invalid."""
@@ -46,6 +50,7 @@ async def test_validate_auth_invalid(m_github, hass):
         await config_flow.validate_auth("token", hass)
 
 
+@pytest.mark.asyncio
 async def test_flow_user_init(hass):
     """Test the initialization of the form in the first step of the config flow."""
     result = await hass.config_entries.flow.async_init(
@@ -64,6 +69,7 @@ async def test_flow_user_init(hass):
     assert expected == result
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.validate_auth")
 async def test_flow_user_init_invalid_auth_token(m_validate_auth, hass):
     """Test errors populated when auth token is invalid."""
@@ -77,6 +83,7 @@ async def test_flow_user_init_invalid_auth_token(m_validate_auth, hass):
     assert {"base": "auth"} == result["errors"]
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.validate_auth")
 async def test_flow_user_init_data_valid(m_validate_auth, hass):
     """Test we advance to the next step when data is valid."""
@@ -90,6 +97,7 @@ async def test_flow_user_init_data_valid(m_validate_auth, hass):
     assert "form" == result["type"]
 
 
+@pytest.mark.asyncio
 async def test_flow_repo_init_form(hass):
     """Test the initialization of the form in the second step of the config flow."""
     result = await hass.config_entries.flow.async_init(
@@ -108,6 +116,7 @@ async def test_flow_repo_init_form(hass):
     assert expected == result
 
 
+@pytest.mark.asyncio
 async def test_flow_repo_path_invalid(hass):
     """Test errors populated when path is invalid."""
     config_flow.GithubCustomConfigFlow.data = {
@@ -122,6 +131,7 @@ async def test_flow_repo_path_invalid(hass):
     assert {"base": "invalid_path"} == result["errors"]
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
 async def test_flow_repo_add_another(github, hass):
     """Test we show the repo flow again if the add_another box was checked."""
@@ -144,6 +154,7 @@ async def test_flow_repo_add_another(github, hass):
     assert "form" == result["type"]
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
 async def test_flow_repo_creates_config_entry(m_github, hass):
     """Test the config entry is successfully created."""
@@ -162,6 +173,7 @@ async def test_flow_repo_creates_config_entry(m_github, hass):
         user_input={CONF_PATH: "home-assistant/core"},
     )
     expected = {
+        "context": {"source": "repo"},
         "version": 1,
         "type": "create_entry",
         "flow_id": mock.ANY,
@@ -181,6 +193,7 @@ async def test_flow_repo_creates_config_entry(m_github, hass):
     assert expected == result
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.sensor.GitHubAPI")
 async def test_options_flow_init(m_github, hass):
     """Test config flow options."""
@@ -211,6 +224,7 @@ async def test_options_flow_init(m_github, hass):
     ].options
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.sensor.GitHubAPI")
 async def test_options_flow_remove_repo(m_github, hass):
     """Test config flow options."""
@@ -242,6 +256,7 @@ async def test_options_flow_remove_repo(m_github, hass):
     assert {CONF_REPOS: []} == result["data"]
 
 
+@pytest.mark.asyncio
 @patch("custom_components.github_custom.sensor.GitHubAPI")
 @patch("custom_components.github_custom.config_flow.GitHubAPI")
 async def test_options_flow_add_repo(m_github, m_github_cf, hass):
