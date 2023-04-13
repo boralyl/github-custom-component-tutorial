@@ -3,7 +3,6 @@ gidgethub[aiohttp]==5.2.1
 cryptography==39.0.0
 
 # Strictly for tests
-codecov==2.1.12
 coverage==7.0.5
 pytest==7.2.1
 pytest-asyncio==0.20.2
