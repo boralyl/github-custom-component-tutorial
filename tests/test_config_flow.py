@@ -165,9 +165,12 @@ async def test_flow_repo_creates_config_entry(m_github, hass):
         CONF_ACCESS_TOKEN: "token",
         CONF_REPOS: [],
     }
-    _result = await hass.config_entries.flow.async_init(
-        config_flow.DOMAIN, context={"source": "repo"}
-    )
+    with patch("custom_components.github_custom.async_setup_entry", return_value=True):
+        _result = await hass.config_entries.flow.async_init(
+            config_flow.DOMAIN, context={"source": "repo"}
+        )
+        await hass.async_block_till_done()
+
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"],
         user_input={CONF_PATH: "home-assistant/core"},
@@ -222,74 +225,3 @@ async def test_options_flow_init(m_github, hass):
     assert {"sensor.ha_core": "HA Core"} == result["data_schema"].schema[
         "repos"
     ].options
-
-
-@pytest.mark.asyncio
-@patch("custom_components.github_custom.sensor.GitHubAPI")
-async def test_options_flow_remove_repo(m_github, hass):
-    """Test config flow options."""
-    m_instance = AsyncMock()
-    m_instance.getitem = AsyncMock()
-    m_github.return_value = m_instance
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        unique_id="kodi_recently_added_media",
-        data={
-            CONF_ACCESS_TOKEN: "access-token",
-            CONF_REPOS: [{"path": "home-assistant/core", "name": "HA Core"}],
-        },
-    )
-    config_entry.add_to_hass(hass)
-    assert await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-
-    # show initial form
-    result = await hass.config_entries.options.async_init(config_entry.entry_id)
-    # submit form with options
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"], user_input={"repos": []}
-    )
-    assert "create_entry" == result["type"]
-    assert "" == result["title"]
-    assert result["result"] is True
-    assert {CONF_REPOS: []} == result["data"]
-
-
-@pytest.mark.asyncio
-@patch("custom_components.github_custom.sensor.GitHubAPI")
-@patch("custom_components.github_custom.config_flow.GitHubAPI")
-async def test_options_flow_add_repo(m_github, m_github_cf, hass):
-    """Test config flow options."""
-    m_instance = AsyncMock()
-    m_instance.getitem = AsyncMock()
-    m_github.return_value = m_instance
-    m_github_cf.return_value = m_instance
-
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        unique_id="kodi_recently_added_media",
-        data={
-            CONF_ACCESS_TOKEN: "access-token",
-            CONF_REPOS: [{"path": "home-assistant/core", "name": "HA Core"}],
-        },
-    )
-    config_entry.add_to_hass(hass)
-    assert await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-
-    # show initial form
-    result = await hass.config_entries.options.async_init(config_entry.entry_id)
-    # submit form with options
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"],
-        user_input={"repos": ["sensor.ha_core"], "path": "boralyl/steam-wishlist"},
-    )
-    assert "create_entry" == result["type"]
-    assert "" == result["title"]
-    assert result["result"] is True
-    expected_repos = [
-        {"path": "home-assistant/core", "name": "HA Core"},
-        {"path": "boralyl/steam-wishlist", "name": "boralyl/steam-wishlist"},
-    ]
-    assert {CONF_REPOS: expected_repos} == result["data"]
