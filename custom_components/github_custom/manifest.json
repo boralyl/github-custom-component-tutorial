@@ -6,6 +6,6 @@
   "dependencies": [],
   "documentation": "https://github.com/boralyl/github-custom-component-tutorial",
   "iot_class": "cloud_polling",
-  "requirements": ["gidgethub[aiohttp]==5.2.1", "cryptography==39.0.0"],
+  "requirements": ["gidgethub[aiohttp]", "cryptography"],
   "version": "1.0.2"
 }
