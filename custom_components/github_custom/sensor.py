@@ -24,7 +24,6 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
     ConfigType,
     DiscoveryInfoType,
-    HomeAssistantType,
 )
 import voluptuous as vol
 
@@ -82,7 +81,7 @@ async def async_setup_entry(
 
 
 async def async_setup_platform(
-    hass: HomeAssistantType,
+    hass: core.HomeAssistant,
     config: ConfigType,
     async_add_entities: Callable,
     discovery_info: DiscoveryInfoType | None = None,
