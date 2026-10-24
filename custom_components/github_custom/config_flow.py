@@ -1,6 +1,8 @@
+"""Config flow for the GitHub Custom component."""
+
 from copy import deepcopy
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from gidgethub import BadRequest
 from gidgethub.aiohttp import GitHubAPI
@@ -34,7 +36,7 @@ OPTIONS_SHCEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
 
 
 async def validate_path(path: str, access_token: str, hass: core.HassJob) -> None:
-    """Validates a GitHub repo path.
+    """Validate a GitHub repo path.
 
     Raises a ValueError if the path is invalid.
     """
@@ -49,7 +51,7 @@ async def validate_path(path: str, access_token: str, hass: core.HassJob) -> Non
 
 
 async def validate_auth(access_token: str, hass: core.HomeAssistant) -> None:
-    """Validates a GitHub access token.
+    """Validate a GitHub access token.
 
     Raises a ValueError if the auth token is invalid.
     """
@@ -64,11 +66,11 @@ async def validate_auth(access_token: str, hass: core.HomeAssistant) -> None:
 class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Github Custom config flow."""
 
-    data: Optional[Dict[str, Any]]
+    data: dict[str, Any] | None
 
-    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
-        """Invoked when a user initiates a flow via the user interface."""
-        errors: Dict[str, str] = {}
+    async def async_step_user(self, user_input: dict[str, Any] | None = None):
+        """Handle a flow initiated by the user via the user interface."""
+        errors: dict[str, str] = {}
         if user_input is not None:
             try:
                 await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
@@ -85,9 +87,9 @@ class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=AUTH_SCHEMA, errors=errors
         )
 
-    async def async_step_repo(self, user_input: Optional[Dict[str, Any]] = None):
+    async def async_step_repo(self, user_input: dict[str, Any] | None = None):
         """Second step in config flow to add a repo to watch."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
         if user_input is not None:
             # Validate the path.
             try:
@@ -121,20 +123,17 @@ class GithubCustomConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return OptionsFlowHandler(config_entry)
+        return OptionsFlowHandler()
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handles options flow for the component."""
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
-
     async def async_step_init(
-        self, user_input: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+        self, user_input: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Manage the options for the custom component."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
         # Grab all configured repos from the entity registry so we can populate the
         # multi-select dropdown that will allow a user to remove a repo.
         entity_registry = async_get(self.hass)

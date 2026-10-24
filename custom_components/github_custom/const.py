@@ -1,3 +1,5 @@
+"""Constants for the GitHub Custom component."""
+
 DOMAIN = "github_custom"
 
 ATTR_CLONES = "clones"

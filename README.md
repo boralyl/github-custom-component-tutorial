@@ -21,9 +21,13 @@ The tutorial walks through the steps to create a custom component for use in Hom
 An integration that monitors [GitHub](https://github.com/) repositories specified in a `configuration.yaml` file
 or optionally via the Integrations UI.
 
+Requires Home Assistant 2024.11.0 or newer.
+
 ## Running Tests
 
-To run the test suite create a virtualenv (I recommend checking out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) for this) and install the test requirements.
+The test suite requires Python 3.14, the version required by current releases of Home Assistant. Create a virtualenv
+(I recommend checking out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
+for this) and install the test requirements.
 
 ```bash
 $ pip install -r requirements.test.txt
@@ -34,26 +38,44 @@ the test suite.
 
 ```bash
 $ pytest
-Test session starts (platform: linux, Python 3.7.5, pytest 5.4.3, pytest-sugar 0.9.4)
-rootdir: /home/aaron/projects/github-custom, inifile: setup.cfg, testpaths: tests
-plugins: forked-1.3.0, timeout-1.4.2, cov-2.10.1, aiohttp-0.3.0, requests-mock-1.8.0, xdist-2.1.0, sugar-0.9.4, test-groups-1.0.3, homeassistant-custom-component-0.0.20
-collecting ...
- tests/test_config_flow.py ✓✓✓✓✓✓✓✓✓✓✓                                                                                                                                          85% ████████▌
- tests/test_sensor.py ✓✓                                                                                                                                                       100% ██████████
+============================= test session starts ==============================
+platform linux -- Python 3.14.8, pytest-9.0.3, pluggy-1.7.0
+rootdir: /home/aaron/projects/github-custom-component-tutorial
+configfile: setup.cfg
+testpaths: tests
+plugins: codspeed-5.0.3, aiohttp-1.1.1, homeassistant-custom-component-0.13.374, xdist-3.8.0, asyncio-1.4.0, cov-7.1.0, anyio-4.15.1, timeout-2.4.0, pytest_freezer-0.4.9, respx-0.23.1, github-actions-annotate-failures-0.4.2, picked-0.5.1, requests-mock-1.12.1, socket-0.8.1, unordered-0.8.0, syrupy-6.1.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collected 14 items
 
------------ coverage: platform linux, python 3.7.5-final-0 -----------
+tests/test_config_flow.py ............                                   [ 85%]
+tests/test_sensor.py ..                                                  [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.14.8-final-0 ________________
+
 Name                                             Stmts   Miss  Cover   Missing
 ------------------------------------------------------------------------------
 custom_components/__init__.py                        0      0   100%
-custom_components/github_custom/__init__.py         12      0   100%
-custom_components/github_custom/config_flow.py      23      0   100%
+custom_components/github_custom/__init__.py         24      1    96%   36
+custom_components/github_custom/config_flow.py      60     19    68%   49-50, 148-186
 custom_components/github_custom/const.py            18      0   100%
-custom_components/github_custom/sensor.py           97      5    95%   86-89, 121
+custom_components/github_custom/sensor.py           99      5    95%   72, 86-89
 ------------------------------------------------------------------------------
-TOTAL                                              150      5    97%
+TOTAL                                              201     25    88%
+Required test coverage of 84.0% reached. Total coverage: 87.56%
+============================== 14 passed in 0.41s ==============================
+```
 
-Required test coverage of 93.0% reached. Total coverage: 96.67%
+## Linting
 
-Results (0.73s):
-      13 passed
+Linting and formatting checks are run with [pre-commit](https://pre-commit.com/). To run them against the whole repo:
+
+```bash
+$ pre-commit run --all-files
+```
+
+To have them run automatically on every commit:
+
+```bash
+$ pre-commit install
 ```

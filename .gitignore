@@ -1,0 +1,18 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Test and coverage output
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.pytest_cache/
+
+# Tooling caches
+.mypy_cache/
+
+# Local environments
+.python-version
+.venv/
+venv/
