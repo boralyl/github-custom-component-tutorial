@@ -1,4 +1,5 @@
 """Tests for the config flow."""
+
 from unittest import mock
 from unittest.mock import AsyncMock, patch
 
@@ -63,6 +64,7 @@ async def test_flow_user_init(hass):
         "flow_id": mock.ANY,
         "handler": "github_custom",
         "last_step": None,
+        "preview": None,
         "step_id": "user",
         "type": "form",
     }
@@ -111,6 +113,7 @@ async def test_flow_repo_init_form(hass):
         "handler": "github_custom",
         "step_id": "repo",
         "last_step": None,
+        "preview": None,
         "type": "form",
     }
     assert expected == result
@@ -178,6 +181,7 @@ async def test_flow_repo_creates_config_entry(m_github, hass):
     expected = {
         "context": {"source": "repo"},
         "version": 1,
+        "minor_version": 1,
         "type": "create_entry",
         "flow_id": mock.ANY,
         "handler": "github_custom",
@@ -192,6 +196,7 @@ async def test_flow_repo_creates_config_entry(m_github, hass):
         "description_placeholders": None,
         "options": {},
         "result": mock.ANY,
+        "subentries": (),
     }
     assert expected == result
 

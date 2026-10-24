@@ -1,10 +1,10 @@
 # From our manifest.json for our custom component
-gidgethub[aiohttp]==5.2.1 
-cryptography==40.0.1
+gidgethub[aiohttp]==6.0.0
+# Pinned to match homeassistant's own pin
+cryptography==50.0.1
 
-# Strictly for tests
-coverage==7.2.1
-pytest==7.2.2
-pytest-asyncio==0.20.3
-pytest-cov==3.0.0
-pytest-homeassistant-custom-component==0.13.20
+# Strictly for tests. This also pins homeassistant, pytest, pytest-asyncio,
+# pytest-cov and coverage to the versions HA itself tests with.
+pytest-homeassistant-custom-component==0.13.374
+# Ubuntu 26.04 runners no longer ship legacy zones (e.g. US/Pacific) used by the HA test harness
+tzdata

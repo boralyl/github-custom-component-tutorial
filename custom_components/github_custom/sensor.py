@@ -1,5 +1,4 @@
 """GitHub sensor platform."""
-from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import timedelta
@@ -21,10 +20,7 @@ from homeassistant.const import (
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.typing import (
-    ConfigType,
-    DiscoveryInfoType,
-)
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 import voluptuous as vol
 
 from .const import (
@@ -69,7 +65,7 @@ async def async_setup_entry(
     config_entry: config_entries.ConfigEntry,
     async_add_entities,
 ) -> None:
-    """Setup sensors from a config entry created in the integrations UI."""
+    """Set up sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
     # Update our config to include new repos and remove those that have been removed.
     if config_entry.options:
@@ -97,6 +93,7 @@ class GitHubRepoSensor(Entity):
     """Representation of a GitHub Repo sensor."""
 
     def __init__(self, github: GitHubAPI, repo: dict[str, str]):
+        """Initialize the sensor."""
         super().__init__()
         self.github = github
         self.repo = repo["path"]
@@ -122,10 +119,12 @@ class GitHubRepoSensor(Entity):
 
     @property
     def state(self) -> str | None:
+        """Return the state of the sensor."""
         return self._state
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the state attributes of the sensor."""
         return self.attrs
 
     async def async_update(self) -> None:
