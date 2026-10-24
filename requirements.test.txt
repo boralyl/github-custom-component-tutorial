@@ -8,3 +8,5 @@ pytest==7.2.2
 pytest-asyncio==0.20.3
 pytest-cov==3.0.0
 pytest-homeassistant-custom-component==0.13.20
+# Ubuntu 26.04 runners no longer ship legacy zones (e.g. US/Pacific) used by the HA test harness
+tzdata
