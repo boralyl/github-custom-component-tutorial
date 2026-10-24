@@ -1,0 +1,83 @@
+[project]
+name = "github-custom-component-tutorial"
+version = "0.1.0"
+description = "Home Assistant custom component created in the aarongodfrey.dev tutorial series"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.14.2"
+dependencies = [
+    # From our manifest.json for our custom component
+    "gidgethub[aiohttp]==6.0.0",
+]
+
+[dependency-groups]
+dev = [
+    # Pinned to match homeassistant's own pin
+    "cryptography==50.0.1",
+    "pre-commit",
+    # Strictly for tests. This also pins homeassistant, pytest, pytest-asyncio,
+    # pytest-cov and coverage to the versions HA itself tests with.
+    "pytest-homeassistant-custom-component==0.13.374",
+    # Ubuntu 26.04 runners no longer ship legacy zones (e.g. US/Pacific) used by the HA test harness
+    "tzdata",
+]
+
+[tool.uv]
+# This repo is a Home Assistant custom component, not an installable package
+package = false
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "D",  # pydocstyle
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+    "W",  # pycodestyle warnings
+]
+ignore = [
+    "D202", # No blank lines allowed after function docstring
+    "E501", # Line too long, handled by the formatter
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.isort]
+# will group `import x` and `from x import` of the same module.
+force-sort-within-sections = true
+known-first-party = ["custom_components", "tests"]
+forced-separate = ["tests"]
+combine-as-imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [".git"]
+addopts = "--cov=custom_components"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["custom_components"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplemented()",
+    "if __name__ == '__main__':",
+    "main()",
+]
+fail_under = 84
+show_missing = true
+
+[tool.mypy]
+python_version = "3.14"
+ignore_errors = true
+follow_imports = "silent"
+ignore_missing_imports = true
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_unused_configs = true

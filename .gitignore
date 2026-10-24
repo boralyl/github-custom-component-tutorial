@@ -13,6 +13,5 @@ coverage.xml
 .mypy_cache/
 
 # Local environments
-.python-version
 .venv/
 venv/

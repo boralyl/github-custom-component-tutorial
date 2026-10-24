@@ -25,23 +25,23 @@ Requires Home Assistant 2024.11.0 or newer.
 
 ## Running Tests
 
-The test suite requires Python 3.14, the version required by current releases of Home Assistant. Create a virtualenv
-(I recommend checking out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
-for this) and install the test requirements.
+The test suite requires Python 3.14, the version required by current releases of Home Assistant. Dependencies are
+managed with [uv](https://docs.astral.sh/uv/), which will download a suitable Python and create a virtualenv for you.
+Install the dependencies (including the test and lint tools) with:
 
 ```bash
-$ pip install -r requirements.test.txt
+$ uv sync
 ```
 
-After the test dependencies are installed you can simply invoke `pytest` to run
+After the dependencies are installed you can invoke `pytest` through uv to run
 the test suite.
 
 ```bash
-$ pytest
+$ uv run pytest
 ============================= test session starts ==============================
 platform linux -- Python 3.14.8, pytest-9.0.3, pluggy-1.7.0
 rootdir: /home/aaron/projects/github-custom-component-tutorial
-configfile: setup.cfg
+configfile: pyproject.toml
 testpaths: tests
 plugins: codspeed-5.0.3, aiohttp-1.1.1, homeassistant-custom-component-0.13.374, xdist-3.8.0, asyncio-1.4.0, cov-7.1.0, anyio-4.15.1, timeout-2.4.0, pytest_freezer-0.4.9, respx-0.23.1, github-actions-annotate-failures-0.4.2, picked-0.5.1, requests-mock-1.12.1, socket-0.8.1, unordered-0.8.0, syrupy-6.1.1
 asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
@@ -71,11 +71,11 @@ Required test coverage of 84.0% reached. Total coverage: 87.56%
 Linting and formatting checks are run with [pre-commit](https://pre-commit.com/). To run them against the whole repo:
 
 ```bash
-$ pre-commit run --all-files
+$ uv run pre-commit run --all-files
 ```
 
 To have them run automatically on every commit:
 
 ```bash
-$ pre-commit install
+$ uv run pre-commit install
 ```

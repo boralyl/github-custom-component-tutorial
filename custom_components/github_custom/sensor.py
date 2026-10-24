@@ -184,7 +184,7 @@ class GitHubRepoSensor(Entity):
             # Set state to short commit sha.
             self._state = latest_commit["sha"][:7]
             self._available = True
-        except (ClientError, gidgethub.GitHubException):
+        except ClientError, gidgethub.GitHubException:
             self._available = False
             _LOGGER.exception(
                 "Error retrieving data from GitHub for sensor %s", self.name
